@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class _3_OpenDatastorePostgis {
     @Test
-    public void testRead() throws Exception {
+    public void test() throws Exception {
         final PostgisNGDataStoreFactory factory = new PostgisNGDataStoreFactory();
 
         Map<String, Serializable> params = new HashMap<>();

@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class _2_OpenDatabaseWFS {
     @Test
-    public void testRead() throws Exception {
+    public void test() throws Exception {
         final WFSDataStoreFactory factory = new WFSDataStoreFactory();
 
         final URL url = new URL("http://tc-geocat0i.bgdi.admin.ch/geoserver/wfs?SERVICE=WFS");

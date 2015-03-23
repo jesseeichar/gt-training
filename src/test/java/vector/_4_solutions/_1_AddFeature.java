@@ -17,7 +17,7 @@ import java.net.URL;
  */
 public class _1_AddFeature {
     @Test
-    public void testAddFeature() throws Exception {
+    public void test() throws Exception {
         final ShapefileDataStoreFactory factory = new ShapefileDataStoreFactory();
 
         final URL url = getClass().getResource("/france.shp");

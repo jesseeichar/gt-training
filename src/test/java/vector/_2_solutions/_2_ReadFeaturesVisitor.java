@@ -15,9 +15,9 @@ import java.net.URL;
  * Read a shapefile and print information about the file.
  * @author Jesse on 3/23/2015.
  */
-public class _2_ReadFeaturesVector {
+public class _2_ReadFeaturesVisitor {
     @Test
-    public void testRead() throws Exception {
+    public void test() throws Exception {
         final ShapefileDataStoreFactory factory = new ShapefileDataStoreFactory();
 
         final URL url = getClass().getResource("/france.shp");
