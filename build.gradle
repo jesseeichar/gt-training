@@ -8,7 +8,7 @@ repositories {
     mavenCentral()
 }
 
-def geotoolsVersion = "9.1"
+def geotoolsVersion = "13.0"
 
 dependencies {
     compile "com.google.guava:guava:15.0",
@@ -16,6 +16,8 @@ dependencies {
             "org.geotools:gt-render:$geotoolsVersion",
             "org.geotools:gt-epsg-hsql:$geotoolsVersion",
             "org.geotools:gt-shapefile:$geotoolsVersion",
+            "org.geotools:gt-wfs-ng:$geotoolsVersion",
+            "org.geotools.jdbc:gt-jdbc-postgis:$geotoolsVersion",
             "com.google.code.findbugs:jsr305:2.0.1"
 	
     testCompile "org.mockito:mockito-all:1.9.5",

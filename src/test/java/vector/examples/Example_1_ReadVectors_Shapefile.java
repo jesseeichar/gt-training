@@ -1,4 +1,4 @@
-package vector;
+package vector.examples;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.Query;
@@ -14,7 +14,7 @@ import java.util.Arrays;
  * Read a shapefile and print information about the file.
  * @author Jesse on 3/23/2015.
  */
-public class Example_1_ReadVectors {
+public class Example_1_ReadVectors_Shapefile {
     @Test
     public void testRead() throws Exception {
         final ShapefileDataStoreFactory factory = new ShapefileDataStoreFactory();
