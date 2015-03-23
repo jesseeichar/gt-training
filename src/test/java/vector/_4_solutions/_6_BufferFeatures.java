@@ -17,11 +17,13 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Jesse on 3/23/2015.
  */
-public class _6_BufferAllFeatures {
+public class _6_BufferFeatures {
     @Test
     public void test() throws Exception {
         final ShapefileDataStoreFactory factory = new ShapefileDataStoreFactory();
@@ -44,19 +46,24 @@ public class _6_BufferAllFeatures {
         });
         Filter filter = filterFactory2.intersects(filterFactory2.property("the_geom"), filterFactory2.literal(geom));
 
+        Map<Id, Geometry> updates = new HashMap<>();
         try (SimpleFeatureIterator features = store.getFeatures(filter).features()) {
             while (features.hasNext()) {
-                SimpleFeature next = features.next();
-                MultiPolygon baseGeom = (MultiPolygon) next.getDefaultGeometry();
-                final Geometry buffer = baseGeom.buffer(1);
+                SimpleFeature feature = features.next();
+                MultiPolygon baseGeom = (MultiPolygon) feature.getDefaultGeometry();
+                final Geometry bufferedGeom = baseGeom.buffer(.2);
 
-                String newName = next.getAttribute("ADMIN_NAME") + " Buffered";
+                final Id featureIdFilter = filterFactory2.id(filterFactory2.featureId(feature.getID()));
 
-                final Id featureIdFilter = filterFactory2.id(filterFactory2.featureId(next.getID()));
-
-                store.modifyFeatures(new String[]{"the_geom", "ADMIN_NAME"}, new Object[] {buffer, newName}, featureIdFilter);
+                updates.put(featureIdFilter, bufferedGeom);
             }
         }
-        store.getTransaction().commit();
+
+        for (Map.Entry<Id, Geometry> entry : updates.entrySet()) {
+            store.modifyFeatures(new String[]{"the_geom"}, new Object[] {entry.getValue()}, entry.getKey());
+
+            store.getTransaction().commit();
+
+        }
     }
 }
