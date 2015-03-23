@@ -1,4 +1,4 @@
-package vector._4_solutions;
+package _1_vector._4_solutions;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;

@@ -1,4 +1,4 @@
-package vector._3_solutions;
+package _1_vector._3_solutions;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
