@@ -2,8 +2,8 @@ package _1_vector._4_solutions;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -14,7 +14,7 @@ import org.geotools.feature.collection.AbstractFeatureVisitor;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.util.DefaultProgressListener;
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -35,11 +35,15 @@ public class _2_CreateDataStore {
     public static final String NAME_PROP = "Name";
     public static final String POPULATION_PROP = "population";
 
-    @After
-    public void tearDown() throws Exception {
-        deleteAllShpFiles();
+    @Before
+    public void setup() throws Exception {
+        final Path pwd = Paths.get(".");
+        try (DirectoryStream<Path> paths = Files.newDirectoryStream(pwd, "newFrance.*")) {
+            for (Path path : paths) {
+                Files.delete(path);
+            }
+        }
     }
-
     @Test
     public void test() throws Exception {
         final SimpleFeatureType featureType = createFeatureType();
@@ -71,18 +75,9 @@ public class _2_CreateDataStore {
 
     }
 
-    private void deleteAllShpFiles() throws IOException {
-        final Path pwd = Paths.get(".");
-        try (DirectoryStream<Path> paths = Files.newDirectoryStream(pwd, "newFrance.*")) {
-            for (Path path : paths) {
-                Files.delete(path);
-            }
-        }
-    }
-
     private SimpleFeatureType createFeatureType() {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.add("the_geom", MultiLineString.class, "EPSG:4326");
+        builder.add("the_geom", MultiPolygon.class, "EPSG:4326");
 
         AttributeTypeBuilder attBuilder = new AttributeTypeBuilder();
         attBuilder.setDescription("Department Name");
@@ -105,14 +100,14 @@ public class _2_CreateDataStore {
 
         GeometryFactory geometryFactory = new GeometryFactory();
 
-        LinearRing ring = geometryFactory.createLinearRing(new Coordinate[]{
+        MultiPolygon geom = geometryFactory.createMultiPolygon(new Polygon[]{geometryFactory.createPolygon(new Coordinate[]{
                 new Coordinate(-1.063807798468548, 48.725454019463584),
                 new Coordinate(6.627878873244578, 48.725454019463584),
                 new Coordinate(6.627878873244578, 44.04700542532879),
                 new Coordinate(-1.063807798468548, 44.04700542532879),
                 new Coordinate(-1.063807798468548, 48.725454019463584)
-        });
-        featureBuilder.set(0, ring);
+        })});
+        featureBuilder.set(0, geom);
         featureBuilder.set(1, "Aquitaine");
         featureBuilder.set(2, 10_000);
 

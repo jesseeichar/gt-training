@@ -1,7 +1,7 @@
 package _1_vector._4_solutions;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureEvent;
 import org.geotools.data.FeatureListener;
@@ -17,19 +17,14 @@ import org.geotools.feature.collection.AbstractFeatureVisitor;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.CRS;
 import org.geotools.util.DefaultProgressListener;
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 import java.io.IOException;
 import java.net.URL;
@@ -42,14 +37,19 @@ import java.util.NoSuchElementException;
 /**
  * @author Jesse on 3/23/2015.
  */
-public class _6_CopyFeaturesWithTransform {
+public class _7_CopyFeaturesWithTransform {
 
     public static final String NAME_PROP = "Name";
     public static final String POPULATION_PROP = "population";
 
-    @After
-    public void tearDown() throws Exception {
-        deleteTmpShpFiles();
+    @Before
+    public void setup() throws Exception {
+        final Path pwd = Paths.get(".");
+        try (DirectoryStream<Path> paths = Files.newDirectoryStream(pwd, "newFrance.*")) {
+            for (Path path : paths) {
+                Files.delete(path);
+            }
+        }
     }
 
     @Test
@@ -95,11 +95,6 @@ public class _6_CopyFeaturesWithTransform {
         final DefaultTransaction transaction = new DefaultTransaction();
         store.setTransaction(transaction);
 
-        final CoordinateReferenceSystem sourceCRS = latLongFrance.getSchema().getCoordinateReferenceSystem();
-        final CoordinateReferenceSystem destCRS = store.getSchema().getCoordinateReferenceSystem();
-        final MathTransform mathTransform = CRS.findMathTransform(sourceCRS, destCRS, true);
-
-
         SimpleFeatureCollection retyped = new DecoratingSimpleFeatureCollection(features) {
             public SimpleFeatureType getSchema() {
                 return store.getSchema();
@@ -121,13 +116,7 @@ public class _6_CopyFeaturesWithTransform {
 
                         final Geometry theGeom = (Geometry) sourceNext.getAttribute("the_geom");
 
-                        try {
-                            final Geometry transformedGeom = JTS.transform(theGeom, mathTransform);
-                            featureBuilder.set(0, transformedGeom);
-                        } catch (TransformException e) {
-                            throw new RuntimeException(e);
-                        }
-
+                        featureBuilder.set(0, theGeom);
                         featureBuilder.set(1, sourceNext.getAttribute("ADMIN_NAME"));
                         featureBuilder.set(2, sourceNext.getAttribute("POP_ADMIN"));
                         return featureBuilder.buildFeature(SimpleFeatureBuilder.createDefaultFeatureId());
@@ -174,7 +163,7 @@ public class _6_CopyFeaturesWithTransform {
 
     private SimpleFeatureType createFeatureType() {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.add("the_geom", MultiLineString.class, "EPSG:2154");
+        builder.add("the_geom", MultiPolygon.class, "EPSG:4326");
 
         AttributeTypeBuilder attBuilder = new AttributeTypeBuilder();
         attBuilder.setDescription("Department Name");
@@ -192,12 +181,4 @@ public class _6_CopyFeaturesWithTransform {
         return builder.buildFeatureType();
     }
 
-    private void deleteTmpShpFiles() throws IOException {
-        final Path pwd = Paths.get(".");
-        try (DirectoryStream<Path> paths = Files.newDirectoryStream(pwd, "newFrance.*")) {
-            for (Path path : paths) {
-                Files.delete(path);
-            }
-        }
-    }
 }
