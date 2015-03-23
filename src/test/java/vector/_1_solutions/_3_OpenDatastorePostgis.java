@@ -1,14 +1,13 @@
-package vector.examples;
+package vector._1_solutions;
 
 import org.geotools.data.Query;
+import org.geotools.data.postgis.PostgisNGDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.wfs.WFSDataStore;
-import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Test;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,15 +16,19 @@ import java.util.Map;
  * Read a shapefile and print information about the file.
  * @author Jesse on 3/23/2015.
  */
-public class Example_1_ReadVectors_WFS {
+public class _3_OpenDatastorePostgis {
     @Test
     public void testRead() throws Exception {
-        final WFSDataStoreFactory factory = new WFSDataStoreFactory();
+        final PostgisNGDataStoreFactory factory = new PostgisNGDataStoreFactory();
 
-        final URL url = new URL("http://tc-geocat0i.bgdi.admin.ch/geoserver/wfs?SERVICE=WFS");
         Map<String, Serializable> params = new HashMap<>();
-        params.put(WFSDataStoreFactory.URL.key, url);
-        WFSDataStore dataStore = factory.createDataStore(params);
+        params.put(PostgisNGDataStoreFactory.HOST.key, "localhost");
+        params.put(PostgisNGDataStoreFactory.PORT.key, "5432");
+        params.put(PostgisNGDataStoreFactory.USER.key, "www-data");
+        params.put(PostgisNGDataStoreFactory.PASSWD.key, "www-data");
+        params.put(PostgisNGDataStoreFactory.SCHEMA.key, "public");
+        params.put(PostgisNGDataStoreFactory.DATABASE.key, "gt-training");
+        JDBCDataStore dataStore = factory.createDataStore(params);
 
         final SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
 
