@@ -37,9 +37,9 @@ public class _1_AddFeature {
                 new Coordinate(-1.063807798468548, 44.04700542532879),
                 new Coordinate(-1.063807798468548, 48.725454019463584)
         });
-        featureBuilder.set(0, ring);
-        featureBuilder.set(1, "Aquitaine");
-        featureBuilder.set(2, 10_000);
+        featureBuilder.set("the_geom", ring);
+        featureBuilder.set("ADMIN_NAME", "My New Feature");
+        featureBuilder.set("POP_ADMIN", 10_000);
 
         final DefaultFeatureCollection featuresToAdd = new DefaultFeatureCollection();
         featuresToAdd.add(featureBuilder.buildFeature(SimpleFeatureBuilder.createDefaultFeatureId()));

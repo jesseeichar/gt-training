@@ -42,7 +42,7 @@ import java.util.NoSuchElementException;
 /**
  * @author Jesse on 3/23/2015.
  */
-public class _4_CopyFeaturesWithTransform {
+public class _6_CopyFeaturesWithTransform {
 
     public static final String NAME_PROP = "Name";
     public static final String POPULATION_PROP = "population";
