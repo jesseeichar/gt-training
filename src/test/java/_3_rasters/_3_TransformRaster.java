@@ -5,7 +5,7 @@ import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.processing.Operations;
 import org.geotools.gce.geotiff.GeoTiffFormat;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValue;
@@ -40,7 +40,7 @@ public class _3_TransformRaster {
                 backgroundColorValue
         };
         final GridCoverage2D sourceCoverage = reader.read(params);
-        final GridCoverage2D wgs63Coverage = (GridCoverage2D) Operations.DEFAULT.resample(sourceCoverage, DefaultGeographicCRS.WGS84);
+        final GridCoverage2D wgs63Coverage = (GridCoverage2D) Operations.DEFAULT.resample(sourceCoverage, CRS.decode("EPSG:2154"));
         ImageIO.write(wgs63Coverage.getRenderedImage(), "png", new File("bogota_rendered.png"));
 
 
