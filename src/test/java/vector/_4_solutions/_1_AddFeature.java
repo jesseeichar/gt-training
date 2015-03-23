@@ -30,13 +30,12 @@ public class _1_AddFeature {
         final SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(store.getSchema());
 
         GeometryFactory geometryFactory = new GeometryFactory();
-
         LinearRing ring = geometryFactory.createLinearRing(new Coordinate[] {
-                new Coordinate(368409, 6405090),
-                new Coordinate(369927, 6405092),
-                new Coordinate(369919, 6404187),
-                new Coordinate(368409, 6404189),
-                new Coordinate(368409, 6405090),
+                new Coordinate(-1.063807798468548, 48.725454019463584),
+                new Coordinate(6.627878873244578, 48.725454019463584),
+                new Coordinate(6.627878873244578, 44.04700542532879),
+                new Coordinate(-1.063807798468548, 44.04700542532879),
+                new Coordinate(-1.063807798468548, 48.725454019463584)
         });
         featureBuilder.set(0, ring);
         featureBuilder.set(1, "Aquitaine");

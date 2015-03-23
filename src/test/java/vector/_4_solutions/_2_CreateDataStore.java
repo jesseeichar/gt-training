@@ -14,6 +14,7 @@ import org.geotools.feature.collection.AbstractFeatureVisitor;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.util.DefaultProgressListener;
+import org.junit.After;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -34,12 +35,17 @@ public class _2_CreateDataStore {
     public static final String NAME_PROP = "Name";
     public static final String POPULATION_PROP = "population";
 
+    @After
+    public void tearDown() throws Exception {
+        deleteAllShpFiles();
+    }
+
     @Test
     public void test() throws Exception {
         final SimpleFeatureType featureType = createFeatureType();
 
         final ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
-        deleteAllShpFiles();
+
         final Path datastoreFile = Paths.get("newFrance.shp");
         final FileDataStore dataStore = dataStoreFactory.createDataStore(datastoreFile.toUri().toURL());
         dataStore.createSchema(featureType);
@@ -76,7 +82,7 @@ public class _2_CreateDataStore {
 
     private SimpleFeatureType createFeatureType() {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.add("the_geom", MultiLineString.class, "EPSG:2154");
+        builder.add("the_geom", MultiLineString.class, "EPSG:4326");
 
         AttributeTypeBuilder attBuilder = new AttributeTypeBuilder();
         attBuilder.setDescription("Department Name");
@@ -100,11 +106,11 @@ public class _2_CreateDataStore {
         GeometryFactory geometryFactory = new GeometryFactory();
 
         LinearRing ring = geometryFactory.createLinearRing(new Coordinate[]{
-                new Coordinate(368409, 6405090),
-                new Coordinate(369927, 6405092),
-                new Coordinate(369919, 6404187),
-                new Coordinate(368409, 6404189),
-                new Coordinate(368409, 6405090),
+                new Coordinate(-1.063807798468548, 48.725454019463584),
+                new Coordinate(6.627878873244578, 48.725454019463584),
+                new Coordinate(6.627878873244578, 44.04700542532879),
+                new Coordinate(-1.063807798468548, 44.04700542532879),
+                new Coordinate(-1.063807798468548, 48.725454019463584)
         });
         featureBuilder.set(0, ring);
         featureBuilder.set(1, "Aquitaine");
