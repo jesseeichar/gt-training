@@ -2,7 +2,8 @@ package vector._4_solutions;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureStore;
@@ -30,14 +31,14 @@ public class _1_AddFeature {
         final SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(store.getSchema());
 
         GeometryFactory geometryFactory = new GeometryFactory();
-        LinearRing ring = geometryFactory.createLinearRing(new Coordinate[] {
+        MultiPolygon geom = geometryFactory.createMultiPolygon(new Polygon[]{geometryFactory.createPolygon(new Coordinate[]{
                 new Coordinate(-1.063807798468548, 48.725454019463584),
                 new Coordinate(6.627878873244578, 48.725454019463584),
                 new Coordinate(6.627878873244578, 44.04700542532879),
                 new Coordinate(-1.063807798468548, 44.04700542532879),
                 new Coordinate(-1.063807798468548, 48.725454019463584)
-        });
-        featureBuilder.set("the_geom", ring);
+        })});
+        featureBuilder.set("the_geom", geom);
         featureBuilder.set("ADMIN_NAME", "My New Feature");
         featureBuilder.set("POP_ADMIN", 10_000);
 
