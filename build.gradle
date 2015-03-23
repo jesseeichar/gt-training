@@ -1,0 +1,52 @@
+apply plugin: "java"
+apply plugin: "idea"
+apply plugin: "eclipse"
+apply plugin: "application"
+apply plugin: "findbugs"
+
+repositories {
+	maven {url "http://download.osgeo.org/webdav/geotools"}
+    mavenCentral()
+}
+
+def geotoolsVersion = "9.1"
+
+dependencies {
+    compile "com.google.guava:guava:15.0",
+            "org.geotools:gt-geotiff:$geotoolsVersion",
+            "org.geotools:gt-render:$geotoolsVersion",
+            "org.geotools:gt-epsg-hsql:$geotoolsVersion",
+            "org.geotools:gt-shapefile:$geotoolsVersion",
+            "com.google.code.findbugs:jsr305:2.0.1"
+	
+    testCompile "org.mockito:mockito-all:1.9.5",
+				"junit:junit:4.+"
+	
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+version = "1.0"
+
+mainClassName = "Main"
+jar {
+    manifest {
+        attributes "Implementation-Title": "Gradle template project", 
+				   "Implementation-Version": version,
+				   "Created-By": "Camptocamp SA",
+				   "Build-Date": new Date().toString()
+				   
+		
+    }
+}
+
+findbugs {
+	toolVersion = "2.0.1"
+	sourceSets = [sourceSets.main]
+	ignoreFailures = false
+	reportsDir = file("$project.buildDir/findbugsReports")
+	effort = "Default"
+	reportLevel = "Default"
+	excludeFilter = file("$rootProject.projectDir/findbugs-excludes.xml")
+}
