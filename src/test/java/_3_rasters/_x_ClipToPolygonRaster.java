@@ -51,7 +51,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Jesse on 3/23/2015.
  */
-public class _5_ClipToPolygonRaster {
+public class _x_ClipToPolygonRaster {
 
     @Test
     public void test() throws IOException, TransformException, FactoryException, URISyntaxException {
