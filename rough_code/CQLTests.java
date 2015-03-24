@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream;
  * Date: 10/2/13
  * Time: 9:27 AM
  */
-public class _2_CQLFilters extends AbstractFilterTest {
+public class CQLTests extends AbstractFilterTest {
 
     @Test
     public void testCQL() throws Exception {

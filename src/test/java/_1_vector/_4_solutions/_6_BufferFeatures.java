@@ -58,8 +58,8 @@ public class _6_BufferFeatures {
             for (Map.Entry<Id, Geometry> entry : updates.entrySet()) {
                 featureSource.modifyFeatures(new String[]{"the_geom"}, new Object[]{entry.getValue()}, entry.getKey());
 
+                // The commit here is a work around for shapefile bug.  It should be outside of for loop in other "proper" datastores
                 featureSource.getTransaction().commit();
-
             }
         } finally {
             dataStore.dispose();

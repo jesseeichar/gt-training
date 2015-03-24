@@ -28,7 +28,7 @@ public class _5_ModifyFeatures {
         final URL url = getClass().getResource("/france.shp");
         final FileDataStore dataStore = factory.createDataStore(url);
         try {
-            final SimpleFeatureStore featureSource = (SimpleFeatureStore) dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
+            final SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
 
             final FilterFactory2 filterFactory2 = CommonFactoryFinder.getFilterFactory2();
             GeometryFactory geometryFactory = new GeometryFactory();
@@ -38,17 +38,17 @@ public class _5_ModifyFeatures {
             });
             Filter filter = filterFactory2.intersects(filterFactory2.property("the_geom"), filterFactory2.literal(geom));
 
-            printFeature(featureSource, filter);
+            printFeature(featureStore, filter);
 
             final DefaultTransaction transaction = new DefaultTransaction();
-            featureSource.setTransaction(transaction);
-            featureSource.modifyFeatures("ADMIN_NAME", "Updated Name", filter);
+            featureStore.setTransaction(transaction);
+            featureStore.modifyFeatures("ADMIN_NAME", "Updated Name", filter);
 
-            printFeature(featureSource, filter);
+            printFeature(featureStore, filter);
 
             transaction.rollback();
 
-            printFeature(featureSource, filter);
+//            printFeature(featureSource, filter);
         } finally {
             dataStore.dispose();
         }
