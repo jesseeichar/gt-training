@@ -59,26 +59,30 @@ public class _7_CopyFeaturesWithTransform {
         final ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
         final Path datastoreFile = Paths.get("newFrance.shp");
         final FileDataStore dataStore = dataStoreFactory.createDataStore(datastoreFile.toUri().toURL());
-        dataStore.createSchema(featureType);
+        try {
+            dataStore.createSchema(featureType);
 
-        final SimpleFeatureSource featureSource = dataStore.getFeatureSource(featureType.getTypeName());
+            final SimpleFeatureSource featureSource = dataStore.getFeatureSource(featureType.getTypeName());
 
-        if (featureSource instanceof SimpleFeatureStore) {
-            SimpleFeatureStore store = (SimpleFeatureStore) featureSource;
-            copyShapefile(store);
-        } else {
-            throw new IllegalStateException("Cannot edit datastore.  It is read-only");
-        }
-
-        featureSource.getFeatures().accepts(new AbstractFeatureVisitor() {
-            @Override
-            public void visit(Feature feature) {
-                System.out.println(NAME_PROP + ": " + feature.getProperty(NAME_PROP).getValue());
-                SimpleFeature simpleFeature = (SimpleFeature) feature;
-                System.out.println(POPULATION_PROP + ": " + simpleFeature.getAttribute(POPULATION_PROP));
+            if (featureSource instanceof SimpleFeatureStore) {
+                SimpleFeatureStore store = (SimpleFeatureStore) featureSource;
+                copyShapefile(store);
+            } else {
+                throw new IllegalStateException("Cannot edit datastore.  It is read-only");
             }
-        }, new DefaultProgressListener());
 
+            featureSource.getFeatures().accepts(new AbstractFeatureVisitor() {
+                @Override
+                public void visit(Feature feature) {
+                    System.out.println(NAME_PROP + ": " + feature.getProperty(NAME_PROP).getValue());
+                    SimpleFeature simpleFeature = (SimpleFeature) feature;
+                    System.out.println(POPULATION_PROP + ": " + simpleFeature.getAttribute(POPULATION_PROP));
+                }
+            }, new DefaultProgressListener());
+
+        } finally {
+            dataStore.dispose();
+        }
 
     }
 
@@ -88,77 +92,82 @@ public class _7_CopyFeaturesWithTransform {
 
         final URL url = getClass().getResource("/france.shp");
         final FileDataStore dataStore = factory.createDataStore(url);
-        final SimpleFeatureSource latLongFrance = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
-        final Query query = new Query();
-        final SimpleFeatureCollection features = latLongFrance.getFeatures(query);
+        try {
+            final SimpleFeatureSource latLongFrance = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
+            final Query query = new Query();
+            final SimpleFeatureCollection features = latLongFrance.getFeatures(query);
 
-        final DefaultTransaction transaction = new DefaultTransaction();
-        store.setTransaction(transaction);
+            final DefaultTransaction transaction = new DefaultTransaction();
+            store.setTransaction(transaction);
 
-        SimpleFeatureCollection retyped = new DecoratingSimpleFeatureCollection(features) {
-            public SimpleFeatureType getSchema() {
-                return store.getSchema();
-            }
-
-            public SimpleFeatureIterator features() {
-                return new SimpleFeatureIterator() {
-                    SimpleFeatureIterator source = features.features();
-                    @Override
-                    public boolean hasNext() {
-                        return source.hasNext();
-                    }
-
-                    @Override
-                    public SimpleFeature next() throws NoSuchElementException {
-                        SimpleFeature sourceNext = source.next();
-
-                        final SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(store.getSchema());
-
-                        final Geometry theGeom = (Geometry) sourceNext.getAttribute("the_geom");
-
-                        featureBuilder.set(0, theGeom);
-                        featureBuilder.set(1, sourceNext.getAttribute("ADMIN_NAME"));
-                        featureBuilder.set(2, sourceNext.getAttribute("POP_ADMIN"));
-                        return featureBuilder.buildFeature(SimpleFeatureBuilder.createDefaultFeatureId());
-                    }
-
-                    @Override
-                    public void close() {
-                        source.close();
-                    }
-                };
-            }
-
-        };
-
-        store.addFeatureListener(new FeatureListener() {
-            int addedCount = 0;
-            @Override
-            public void changed(FeatureEvent featureEvent) {
-                switch (featureEvent.getType()) {
-                    case ADDED:
-                        System.out.println("added event called");
-                        addedCount++;
-                        if (addedCount > 9) {
-                            try {
-                                transaction.commit();
-                                addedCount = 0;
-                                System.out.println("Committing features to keep memory footprint small");
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        break;
-                    default:
-                        // ignore
-                        break;
+            SimpleFeatureCollection retyped = new DecoratingSimpleFeatureCollection(features) {
+                public SimpleFeatureType getSchema() {
+                    return store.getSchema();
                 }
-            }
-        });
 
-        store.addFeatures(retyped);
-        transaction.commit();
+                public SimpleFeatureIterator features() {
+                    return new SimpleFeatureIterator() {
+                        SimpleFeatureIterator source = features.features();
 
+                        @Override
+                        public boolean hasNext() {
+                            return source.hasNext();
+                        }
+
+                        @Override
+                        public SimpleFeature next() throws NoSuchElementException {
+                            SimpleFeature sourceNext = source.next();
+
+                            final SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(store.getSchema());
+
+                            final Geometry theGeom = (Geometry) sourceNext.getAttribute("the_geom");
+
+                            featureBuilder.set(0, theGeom);
+                            featureBuilder.set(1, sourceNext.getAttribute("ADMIN_NAME"));
+                            featureBuilder.set(2, sourceNext.getAttribute("POP_ADMIN"));
+                            return featureBuilder.buildFeature(SimpleFeatureBuilder.createDefaultFeatureId());
+                        }
+
+                        @Override
+                        public void close() {
+                            source.close();
+                        }
+                    };
+                }
+
+            };
+
+            store.addFeatureListener(new FeatureListener() {
+                int addedCount = 0;
+
+                @Override
+                public void changed(FeatureEvent featureEvent) {
+                    switch (featureEvent.getType()) {
+                        case ADDED:
+                            System.out.println("added event called");
+                            addedCount++;
+                            if (addedCount > 9) {
+                                try {
+                                    transaction.commit();
+                                    addedCount = 0;
+                                    System.out.println("Committing features to keep memory footprint small");
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                            break;
+                        default:
+                            // ignore
+                            break;
+                    }
+                }
+            });
+
+            store.addFeatures(retyped);
+            transaction.commit();
+        } finally {
+            dataStore.dispose();
+        }
     }
 
     private SimpleFeatureType createFeatureType() {

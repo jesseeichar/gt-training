@@ -20,20 +20,23 @@ public class _4_DeleteFeatures {
 
         final URL url = getClass().getResource("/france.shp");
         final FileDataStore dataStore = factory.createDataStore(url);
-        final SimpleFeatureStore featureSource = (SimpleFeatureStore) dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
+        try {
+            final SimpleFeatureStore featureSource = (SimpleFeatureStore) dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
 
-        System.out.println("Feature before delete: " + featureSource.getCount(new Query()));
+            System.out.println("Feature before delete: " + featureSource.getCount(new Query()));
 
-        DefaultTransaction transaction = new DefaultTransaction();
-        featureSource.setTransaction(transaction);
-        featureSource.removeFeatures(Filter.INCLUDE);
+            DefaultTransaction transaction = new DefaultTransaction();
+            featureSource.setTransaction(transaction);
+            featureSource.removeFeatures(Filter.INCLUDE);
 
-        System.out.println("Feature after delete: " + featureSource.getCount(new Query()));
+            System.out.println("Feature after delete: " + featureSource.getCount(new Query()));
 
-        transaction.rollback();
+            transaction.rollback();
 
-        System.out.println("Feature after rollback: " + featureSource.getCount(new Query()));
-
+            System.out.println("Feature after rollback: " + featureSource.getCount(new Query()));
+        } finally {
+            dataStore.dispose();
+        }
     }
 
 }

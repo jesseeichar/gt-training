@@ -21,7 +21,6 @@ import javax.imageio.ImageIO;
 import static org.junit.Assert.assertTrue;
 
 /**
- *
  * @author Jesse on 3/23/2015.
  */
 public class _3_TransformRaster {

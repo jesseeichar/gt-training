@@ -27,27 +27,32 @@ public class _5_ModifyFeatures {
 
         final URL url = getClass().getResource("/france.shp");
         final FileDataStore dataStore = factory.createDataStore(url);
-        final SimpleFeatureStore featureSource = (SimpleFeatureStore) dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
+        try {
+            final SimpleFeatureStore featureSource = (SimpleFeatureStore) dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
 
-        final FilterFactory2 filterFactory2 = CommonFactoryFinder.getFilterFactory2();
-        GeometryFactory geometryFactory = new GeometryFactory();
-        Geometry geom = geometryFactory.createLineString(new Coordinate[]{
-                new Coordinate(-1.063807798468548, 48.725454019463584),
-                new Coordinate(6.627878873244578, 44.04700542532879)
-        });
-        Filter filter = filterFactory2.intersects(filterFactory2.property("the_geom"), filterFactory2.literal(geom));
+            final FilterFactory2 filterFactory2 = CommonFactoryFinder.getFilterFactory2();
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Geometry geom = geometryFactory.createLineString(new Coordinate[]{
+                    new Coordinate(-1.063807798468548, 48.725454019463584),
+                    new Coordinate(6.627878873244578, 44.04700542532879)
+            });
+            Filter filter = filterFactory2.intersects(filterFactory2.property("the_geom"), filterFactory2.literal(geom));
 
-        printFeature(featureSource, filter);
+            printFeature(featureSource, filter);
 
-        final DefaultTransaction transaction = new DefaultTransaction();
-        featureSource.setTransaction(transaction);
-        featureSource.modifyFeatures("ADMIN_NAME", "Updated Name", filter);
+            final DefaultTransaction transaction = new DefaultTransaction();
+            featureSource.setTransaction(transaction);
+            featureSource.modifyFeatures("ADMIN_NAME", "Updated Name", filter);
 
-        printFeature(featureSource, filter);
+            printFeature(featureSource, filter);
 
-        transaction.rollback();
+            transaction.rollback();
 
-        printFeature(featureSource, filter);
+            printFeature(featureSource, filter);
+        } finally {
+            dataStore.dispose();
+        }
+
     }
 
 

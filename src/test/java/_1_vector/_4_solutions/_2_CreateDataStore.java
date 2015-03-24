@@ -44,6 +44,7 @@ public class _2_CreateDataStore {
             }
         }
     }
+
     @Test
     public void test() throws Exception {
         final SimpleFeatureType featureType = createFeatureType();
@@ -52,27 +53,29 @@ public class _2_CreateDataStore {
 
         final Path datastoreFile = Paths.get("newFrance.shp");
         final FileDataStore dataStore = dataStoreFactory.createDataStore(datastoreFile.toUri().toURL());
-        dataStore.createSchema(featureType);
+        try {
+            dataStore.createSchema(featureType);
 
-        final SimpleFeatureSource featureSource = dataStore.getFeatureSource(featureType.getTypeName());
+            final SimpleFeatureSource featureSource = dataStore.getFeatureSource(featureType.getTypeName());
 
-        if (featureSource instanceof SimpleFeatureStore) {
-            SimpleFeatureStore store = (SimpleFeatureStore) featureSource;
-            addNewFeature(store);
-        } else {
-            throw new IllegalStateException("Cannot edit datastore.  It is read-only");
-        }
-
-        featureSource.getFeatures().accepts(new AbstractFeatureVisitor() {
-            @Override
-            public void visit(Feature feature) {
-                System.out.println(NAME_PROP + ": " + feature.getProperty(NAME_PROP).getValue());
-                SimpleFeature simpleFeature = (SimpleFeature) feature;
-                System.out.println(POPULATION_PROP + ": " + simpleFeature.getAttribute(POPULATION_PROP));
+            if (featureSource instanceof SimpleFeatureStore) {
+                SimpleFeatureStore store = (SimpleFeatureStore) featureSource;
+                addNewFeature(store);
+            } else {
+                throw new IllegalStateException("Cannot edit datastore.  It is read-only");
             }
-        }, new DefaultProgressListener());
 
-
+            featureSource.getFeatures().accepts(new AbstractFeatureVisitor() {
+                @Override
+                public void visit(Feature feature) {
+                    System.out.println(NAME_PROP + ": " + feature.getProperty(NAME_PROP).getValue());
+                    SimpleFeature simpleFeature = (SimpleFeature) feature;
+                    System.out.println(POPULATION_PROP + ": " + simpleFeature.getAttribute(POPULATION_PROP));
+                }
+            }, new DefaultProgressListener());
+        } finally {
+            dataStore.dispose();
+        }
     }
 
     private SimpleFeatureType createFeatureType() {

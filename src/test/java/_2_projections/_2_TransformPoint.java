@@ -44,6 +44,7 @@ public class _2_TransformPoint {
         final Coordinate back = JTS.transform(startPoint, new Coordinate(), mathTransform.inverse());
         System.out.println("back: " + back);
     }
+
     @Test
     public void testArray() throws FactoryException, TransformException {
         CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");

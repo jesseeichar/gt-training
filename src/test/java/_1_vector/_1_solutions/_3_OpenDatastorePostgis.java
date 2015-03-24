@@ -14,6 +14,7 @@ import java.util.Map;
 
 /**
  * Read a shapefile and print information about the file.
+ *
  * @author Jesse on 3/23/2015.
  */
 public class _3_OpenDatastorePostgis {
@@ -29,13 +30,18 @@ public class _3_OpenDatastorePostgis {
         params.put(PostgisNGDataStoreFactory.SCHEMA.key, "public");
         params.put(PostgisNGDataStoreFactory.DATABASE.key, "gt-training");
         JDBCDataStore dataStore = factory.createDataStore(params);
+        try {
+            final SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
 
-        final SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
+            final ReferencedEnvelope bounds = featureSource.getBounds();
 
-        final ReferencedEnvelope bounds = featureSource.getBounds();
+            System.out.println("Feature Types:" + Arrays.toString(dataStore.getTypeNames()));
+            System.out.printf("Data Bounding Box: [%s, %s  %s, %s] \n", bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds
+                    .getMaxY());
+            System.out.println("Number of features in file: " + featureSource.getCount(Query.ALL));
+        } finally {
+            dataStore.dispose();
+        }
 
-        System.out.println("Feature Types:" + Arrays.toString(dataStore.getTypeNames()));
-        System.out.printf("Data Bounding Box: [%s, %s  %s, %s] \n", bounds.getMinX(), bounds.getMinY(),  bounds.getMaxX(),  bounds.getMaxY());
-        System.out.println("Number of features in file: " + featureSource.getCount(Query.ALL));
     }
 }

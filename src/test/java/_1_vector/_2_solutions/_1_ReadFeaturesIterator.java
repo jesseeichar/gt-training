@@ -13,6 +13,7 @@ import java.net.URL;
 
 /**
  * Read a shapefile and print information about the file.
+ *
  * @author Jesse on 3/23/2015.
  */
 public class _1_ReadFeaturesIterator {
@@ -22,15 +23,19 @@ public class _1_ReadFeaturesIterator {
 
         final URL url = getClass().getResource("/france.shp");
         final FileDataStore dataStore = factory.createDataStore(url);
-        final SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
-        final SimpleFeatureCollection features = featureSource.getFeatures();
+        try {
+            final SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
+            final SimpleFeatureCollection features = featureSource.getFeatures();
 
-        try (final SimpleFeatureIterator featureIterator = features.features()){
-            while (featureIterator.hasNext()) {
-                final SimpleFeature feature = featureIterator.next();
-                Geometry geom = (Geometry) feature.getDefaultGeometry();
-                System.out.println(geom.getEnvelopeInternal());
+            try (final SimpleFeatureIterator featureIterator = features.features()) {
+                while (featureIterator.hasNext()) {
+                    final SimpleFeature feature = featureIterator.next();
+                    Geometry geom = (Geometry) feature.getDefaultGeometry();
+                    System.out.println(geom.getEnvelopeInternal());
+                }
             }
+        } finally {
+            dataStore.dispose();
         }
     }
 }

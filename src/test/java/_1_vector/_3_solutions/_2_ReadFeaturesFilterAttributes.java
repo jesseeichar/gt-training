@@ -14,6 +14,7 @@ import java.net.URL;
 
 /**
  * Read a shapefile and print information about the file.
+ *
  * @author Jesse on 3/23/2015.
  */
 public class _2_ReadFeaturesFilterAttributes {
@@ -23,19 +24,24 @@ public class _2_ReadFeaturesFilterAttributes {
 
         final URL url = getClass().getResource("/france.shp");
         final FileDataStore dataStore = factory.createDataStore(url);
-        final SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
-        Query query = new Query(null, Filter.INCLUDE, new String[]{"ADMIN_NAME", "the_geom"});
-        final SimpleFeatureCollection features = featureSource.getFeatures(query);
+        try {
+            final SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
+            Query query = new Query(null, Filter.INCLUDE, new String[]{"ADMIN_NAME", "the_geom"});
+            final SimpleFeatureCollection features = featureSource.getFeatures(query);
 
-       System.out.println("Number of attributes without query: " + featureSource.getSchema().getAttributeCount());
-       System.out.println("Number of attributes with query: " + features.getSchema().getAttributeCount());
+            System.out.println("Number of attributes without query: " + featureSource.getSchema().getAttributeCount());
+            System.out.println("Number of attributes with query: " + features.getSchema().getAttributeCount());
 
-        try (FeatureIterator<SimpleFeature> iter = features.features()) {
-            if (iter.hasNext()) {
-                SimpleFeature next = iter.next();
-                System.out.println(next);
-                System.out.println("Number of attributes obtained from feature: " + next.getAttributeCount());
+            try (FeatureIterator<SimpleFeature> iter = features.features()) {
+                if (iter.hasNext()) {
+                    SimpleFeature next = iter.next();
+                    System.out.println(next);
+                    System.out.println("Number of attributes obtained from feature: " + next.getAttributeCount());
+                }
             }
+        } finally {
+            dataStore.dispose();
         }
+
     }
 }

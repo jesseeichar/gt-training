@@ -42,31 +42,41 @@ public class _3_SimpleCopyFeatures {
         final URL url = getClass().getResource("/france.shp");
         final FileDataStore franceDataStore = factory.createDataStore(url);
 
-        final SimpleFeatureSource franceStore = franceDataStore.getFeatureSource("france");
+        try {
+            final SimpleFeatureSource franceStore = franceDataStore.getFeatureSource("france");
 
-        final SimpleFeatureTypeBuilder ftBuilder = new SimpleFeatureTypeBuilder();
-        ftBuilder.init(franceStore.getSchema());
-        ftBuilder.setName("newFrance");
+            final SimpleFeatureTypeBuilder ftBuilder = new SimpleFeatureTypeBuilder();
+            ftBuilder.init(franceStore.getSchema());
+            ftBuilder.setName("newFrance");
 
-        final ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
-        final Path datastoreFile = Paths.get("newFrance.shp");
-        final FileDataStore newDataStore = dataStoreFactory.createDataStore(datastoreFile.toUri().toURL());
-        newDataStore.createSchema(ftBuilder.buildFeatureType());
+            final ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
+            final Path datastoreFile = Paths.get("newFrance.shp");
+            final FileDataStore newDataStore = dataStoreFactory.createDataStore(datastoreFile.toUri().toURL());
+            try {
+                newDataStore.createSchema(ftBuilder.buildFeatureType());
 
-        final SimpleFeatureStore newFeatureSource = (SimpleFeatureStore) newDataStore.getFeatureSource(ftBuilder.getName());
-        newFeatureSource.addFeatureListener(new FeatureListener() {
-            @Override
-            public void changed(FeatureEvent featureEvent) {
-                if (featureEvent.getType() == FeatureEvent.Type.ADDED) {
-                    System.out.println("Feature added");
-                } else {
-                    System.out.println("Uh oh... didn't expect this event: " + featureEvent.getType());
-                }
+                final SimpleFeatureStore newFeatureSource = (SimpleFeatureStore) newDataStore.getFeatureSource(ftBuilder.getName());
+                newFeatureSource.addFeatureListener(new FeatureListener() {
+                    @Override
+                    public void changed(FeatureEvent featureEvent) {
+                        if (featureEvent.getType() == FeatureEvent.Type.ADDED) {
+                            System.out.println("Feature added");
+                        } else {
+                            System.out.println("Uh oh... didn't expect this event: " + featureEvent.getType());
+                        }
+                    }
+                });
+                newFeatureSource.addFeatures(franceStore.getFeatures());
+
+                printOutAllFeatures(newFeatureSource);
+            } finally {
+                newDataStore.dispose();
             }
-        });
-        newFeatureSource.addFeatures(franceStore.getFeatures());
+        } finally {
+            franceDataStore.dispose();
+        }
 
-        printOutAllFeatures(newFeatureSource);
+
     }
 
     private void printOutAllFeatures(SimpleFeatureStore newFeatureSource) throws IOException {

@@ -113,7 +113,8 @@ public class _x_ClipToPolygonRaster {
 
             public ClippedCoverage(Polygon polygon, GridCoverage2D coverage, PlanarImage clippedImage, GeometryFactory factory) {
                 super("Clipped: " + polygon.toText(), clippedImage, coverage.getGridGeometry(),
-                        coverage.getSampleDimensions(), new GridCoverage[]{coverage}, coverage.getProperties(), GeoTools.getDefaultHints());
+                        coverage.getSampleDimensions(), new GridCoverage[]{coverage}, coverage.getProperties(), GeoTools
+                                .getDefaultHints());
 //                super("Clipped: " + polygon.toText(), coverage);
                 this.polygon = polygon;
                 this.factory = factory;

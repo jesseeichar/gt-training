@@ -12,6 +12,7 @@ import java.util.Arrays;
 
 /**
  * Read a shapefile and print information about the file.
+ *
  * @author Jesse on 3/23/2015.
  */
 public class _1_OpenDatastoreShapefile {
@@ -21,13 +22,18 @@ public class _1_OpenDatastoreShapefile {
 
         final URL url = getClass().getResource("/france.shp");
         final FileDataStore dataStore = factory.createDataStore(url);
+        try {
+            final SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
 
-        final SimpleFeatureSource featureSource = dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
+            final ReferencedEnvelope bounds = featureSource.getBounds();
 
-        final ReferencedEnvelope bounds = featureSource.getBounds();
+            System.out.println("Feature Types:" + Arrays.toString(dataStore.getTypeNames()));
+            System.out.printf("Data Bounding Box: [%s, %s  %s, %s] \n", bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds
+                    .getMaxY());
 
-        System.out.println("Feature Types:" + Arrays.toString(dataStore.getTypeNames()));
-        System.out.printf("Data Bounding Box: [%s, %s  %s, %s] \n", bounds.getMinX(), bounds.getMinY(),  bounds.getMaxX(),  bounds.getMaxY());
-        System.out.println("Number of features in file: " + featureSource.getCount(Query.ALL));
+            System.out.println("Number of features in file: " + featureSource.getCount(Query.ALL));
+        } finally {
+            dataStore.dispose();
+        }
     }
 }

@@ -30,40 +30,41 @@ public class _6_BufferFeatures {
 
         final URL url = getClass().getResource("/france.shp");
         final FileDataStore dataStore = factory.createDataStore(url);
-        final SimpleFeatureStore featureSource = (SimpleFeatureStore) dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
+        try {
+            final SimpleFeatureStore featureSource = (SimpleFeatureStore) dataStore.getFeatureSource(dataStore.getTypeNames()[0]);
 
-        modifyFeaturesBuffer(featureSource);
-    }
+            featureSource.setTransaction(new DefaultTransaction());
+            final FilterFactory2 filterFactory2 = CommonFactoryFinder.getFilterFactory2();
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Geometry geom = geometryFactory.createLineString(new Coordinate[]{
+                    new Coordinate(-1.063807798468548, 48.725454019463584),
+                    new Coordinate(6.627878873244578, 44.04700542532879)
+            });
+            Filter filter = filterFactory2.intersects(filterFactory2.property("the_geom"), filterFactory2.literal(geom));
 
+            Map<Id, Geometry> updates = new HashMap<>();
+            try (SimpleFeatureIterator features = featureSource.getFeatures(filter).features()) {
+                while (features.hasNext()) {
+                    SimpleFeature feature = features.next();
+                    MultiPolygon baseGeom = (MultiPolygon) feature.getDefaultGeometry();
+                    final Geometry bufferedGeom = baseGeom.buffer(.2);
 
-    private void modifyFeaturesBuffer(SimpleFeatureStore store) throws Exception {
-        store.setTransaction(new DefaultTransaction());
-        final FilterFactory2 filterFactory2 = CommonFactoryFinder.getFilterFactory2();
-        GeometryFactory geometryFactory = new GeometryFactory();
-        Geometry geom = geometryFactory.createLineString(new Coordinate[]{
-                new Coordinate(-1.063807798468548, 48.725454019463584),
-                new Coordinate(6.627878873244578, 44.04700542532879)
-        });
-        Filter filter = filterFactory2.intersects(filterFactory2.property("the_geom"), filterFactory2.literal(geom));
+                    final Id featureIdFilter = filterFactory2.id(filterFactory2.featureId(feature.getID()));
 
-        Map<Id, Geometry> updates = new HashMap<>();
-        try (SimpleFeatureIterator features = store.getFeatures(filter).features()) {
-            while (features.hasNext()) {
-                SimpleFeature feature = features.next();
-                MultiPolygon baseGeom = (MultiPolygon) feature.getDefaultGeometry();
-                final Geometry bufferedGeom = baseGeom.buffer(.2);
-
-                final Id featureIdFilter = filterFactory2.id(filterFactory2.featureId(feature.getID()));
-
-                updates.put(featureIdFilter, bufferedGeom);
+                    updates.put(featureIdFilter, bufferedGeom);
+                }
             }
-        }
 
-        for (Map.Entry<Id, Geometry> entry : updates.entrySet()) {
-            store.modifyFeatures(new String[]{"the_geom"}, new Object[] {entry.getValue()}, entry.getKey());
+            for (Map.Entry<Id, Geometry> entry : updates.entrySet()) {
+                featureSource.modifyFeatures(new String[]{"the_geom"}, new Object[]{entry.getValue()}, entry.getKey());
 
-            store.getTransaction().commit();
+                featureSource.getTransaction().commit();
 
+            }
+        } finally {
+            dataStore.dispose();
         }
     }
+
+
 }

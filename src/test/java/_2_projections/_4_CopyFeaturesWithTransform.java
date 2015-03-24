@@ -113,6 +113,7 @@ public class _4_CopyFeaturesWithTransform {
             public SimpleFeatureIterator features() {
                 return new SimpleFeatureIterator() {
                     SimpleFeatureIterator source = features.features();
+
                     @Override
                     public boolean hasNext() {
                         return source.hasNext();
@@ -149,6 +150,7 @@ public class _4_CopyFeaturesWithTransform {
 
         store.addFeatureListener(new FeatureListener() {
             int addedCount = 0;
+
             @Override
             public void changed(FeatureEvent featureEvent) {
                 switch (featureEvent.getType()) {
