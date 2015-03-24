@@ -1,5 +1,6 @@
-package _4_filters;
+package _4_filters._2_CQL;
 
+import _4_filters.AbstractFilterTest;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -12,7 +13,7 @@ import org.opengis.filter.Filter;
  * Date: 10/2/13
  * Time: 9:27 AM
  */
-public class _10_CQLContains extends AbstractFilterTest {
+public class _3_CQLContains extends AbstractFilterTest {
 
     @Test
     public void testCQL() throws Exception {

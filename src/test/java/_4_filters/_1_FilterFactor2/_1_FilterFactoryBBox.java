@@ -1,5 +1,6 @@
-package _4_filters;
+package _4_filters._1_FilterFactor2;
 
+import _4_filters.AbstractFilterTest;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Test;
 import org.opengis.filter.FilterFactory;

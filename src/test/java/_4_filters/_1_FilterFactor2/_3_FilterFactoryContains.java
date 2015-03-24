@@ -1,5 +1,6 @@
-package _4_filters;
+package _4_filters._1_FilterFactor2;
 
+import _4_filters.AbstractFilterTest;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
