@@ -43,10 +43,10 @@ public class _3_SimpleCopyFeatures {
         final FileDataStore franceDataStore = factory.createDataStore(url);
 
         try {
-            final SimpleFeatureSource franceStore = franceDataStore.getFeatureSource("france");
+            final SimpleFeatureSource franceSource = franceDataStore.getFeatureSource("france");
 
             final SimpleFeatureTypeBuilder ftBuilder = new SimpleFeatureTypeBuilder();
-            ftBuilder.init(franceStore.getSchema());
+            ftBuilder.init(franceSource.getSchema());
             ftBuilder.setName("newFrance");
 
             final ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
@@ -55,8 +55,8 @@ public class _3_SimpleCopyFeatures {
             try {
                 newDataStore.createSchema(ftBuilder.buildFeatureType());
 
-                final SimpleFeatureStore newFeatureSource = (SimpleFeatureStore) newDataStore.getFeatureSource(ftBuilder.getName());
-                newFeatureSource.addFeatureListener(new FeatureListener() {
+                final SimpleFeatureStore newFeatureStore = (SimpleFeatureStore) newDataStore.getFeatureSource(ftBuilder.getName());
+                newFeatureStore.addFeatureListener(new FeatureListener() {
                     @Override
                     public void changed(FeatureEvent featureEvent) {
                         if (featureEvent.getType() == FeatureEvent.Type.ADDED) {
@@ -66,9 +66,9 @@ public class _3_SimpleCopyFeatures {
                         }
                     }
                 });
-                newFeatureSource.addFeatures(franceStore.getFeatures());
+                newFeatureStore.addFeatures(franceSource.getFeatures());
 
-                printOutAllFeatures(newFeatureSource);
+                printOutAllFeatures(newFeatureStore);
             } finally {
                 newDataStore.dispose();
             }
