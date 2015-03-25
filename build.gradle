@@ -18,6 +18,9 @@ dependencies {
             "org.geotools:gt-shapefile:$geotoolsVersion",
             "org.geotools:gt-wfs-ng:$geotoolsVersion",
             "org.geotools.jdbc:gt-jdbc-postgis:$geotoolsVersion",
+            "org.geotools:gt-swing:$geotoolsVersion",
+            "org.geotools:gt-graph:$geotoolsVersion",
+            "org.apache.xmlgraphics:batik-svggen:1.7",
             "com.google.code.findbugs:jsr305:2.0.1"
 	
     testCompile "org.mockito:mockito-all:1.9.5",
