@@ -35,7 +35,7 @@ public final class GraphUtil {
 
         public int visit(Graphable component) {
             Iterator related = component.getRelated();
-            if (related.hasNext()) {
+            if (!related.hasNext()) {
                 // no related components makes this an orphan
                 count++;
             }
