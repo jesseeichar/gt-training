@@ -26,10 +26,11 @@ public class _3_FilterFactoryContains extends AbstractFilterTest {
         FilterFactory2 filterFactory2 = CommonFactoryFinder.getFilterFactory2();
         GeometryFactory geometryFactory = new GeometryFactory();
         Geometry largeGeom = geometryFactory.toGeometry(new Envelope(5, 180, -90, 90));
-        Geometry smallGeom = geometryFactory.createPoint(new Coordinate(4,45));
         final PropertyName geomProperty = filterFactory2.property("the_geom");
         Within polygonContainsFeatureFilter = filterFactory2.within(geomProperty, filterFactory2.literal(largeGeom));
         System.out.println("Features in 'polygon contains feature': " + this.featureSource.getFeatures(polygonContainsFeatureFilter).size());
+
+        Geometry smallGeom = geometryFactory.createPoint(new Coordinate(4,45));
         Contains featureContainsPolygonFilter = filterFactory2.contains(geomProperty, filterFactory2.literal(smallGeom));
         System.out.println("Features in 'feature contains polygon': " + this.featureSource.getFeatures(featureContainsPolygonFilter).size());
     }

@@ -3,6 +3,7 @@ package _2_projections;
 import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.opengis.geometry.DirectPosition;
@@ -60,7 +61,17 @@ public class _2_TransformPoint {
         mathTransform.inverse().transform(dstPts, 0, wgs84AgainPts, 0, 1);
 
         System.out.println("back: " + Arrays.toString(wgs84AgainPts));
-
     }
 
+    @Test
+    public void testReferencedEnvelope() throws Exception {
+        CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");
+        CoordinateReferenceSystem epsg2154 = CRS.decode("EPSG:2154");
+
+        final ReferencedEnvelope wgs84Env = new ReferencedEnvelope(1, 2, 48, 52, wgs84);
+        final ReferencedEnvelope epsg2154Env = wgs84Env.transform(epsg2154, true);
+
+        System.out.println("Start: " + wgs84Env + "\nEnd: " + epsg2154Env);
+        System.out.println("Back: " + epsg2154Env.transform(wgs84, true));
+    }
 }
